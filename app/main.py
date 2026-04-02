@@ -15,7 +15,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, HTMLResponse
 
 from app.api import account, subreddit, post
 from app.config.settings import settings
@@ -69,11 +69,44 @@ async def global_exception_handler(request: Request, exc: Exception):
         content={"detail": "Internal server error. Check logs for details."},
     )
 
-# ── Health checks ─────────────────────────────────────────────────────────────
+# ── Health checks & Root ──────────────────────────────────────────────────────
 
-@app.get("/", tags=["Health"], summary="Root health check")
+@app.get("/", tags=["Health"], response_class=HTMLResponse, summary="Root welcome page")
 async def root():
-    return {"status": "ok", "service": settings.app_name, "version": "1.0.0"}
+    return f"""
+    <html>
+        <head>
+            <title>{settings.app_name}</title>
+            <style>
+                body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 40px 20px; color: #333; }}
+                h1 {{ color: #FF4500; border-bottom: 2px solid #FF4500; padding-bottom: 10px; }}
+                .btn {{ display: inline-block; background: #FF4500; color: white; text-decoration: none; padding: 10px 20px; border-radius: 5px; font-weight: bold; margin-top: 20px; }}
+                .btn:hover {{ background: #e03d00; }}
+                .card {{ background: #f9f9f9; border: 1px solid #ddd; padding: 20px; border-radius: 8px; margin-top: 30px; }}
+                code {{ background: #eee; padding: 2px 5px; border-radius: 3px; font-family: monospace; }}
+            </style>
+        </head>
+        <body>
+            <h1>🤖 {settings.app_name}</h1>
+            <p>Welcome! Your API is successfully deployed and running.</p>
+            
+            <p>To view the available endpoints, see requirements, and test the API interactively, please visit the developer documentation:</p>
+            
+            <a href="/docs" class="btn">View API Documentation (Swagger UI) →</a>
+            
+            <div class="card">
+                <h3>🚀 Available Endpoints:</h3>
+                <ul>
+                    <li><code>POST /create-account</code> &mdash; Automates the Reddit signup flow</li>
+                    <li><code>POST /join-subreddit</code> &mdash; Joins a community using a saved session</li>
+                    <li><code>POST /create-post</code> &mdash; Creates a text post in a specified subreddit</li>
+                    <li><code>GET /health</code> &mdash; Simple health check</li>
+                </ul>
+                <p><em>Note: This API uses Playwright to perform asynchronous browser automation.</em></p>
+            </div>
+        </body>
+    </html>
+    """
 
 
 @app.get("/health", tags=["Health"], summary="Health check")
