@@ -1,0 +1,17 @@
+version: "3.9"
+
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    volumes:
+      # Persist sessions and logs between container restarts
+      - ./data:/app/data
+      - ./logs:/app/logs
+    environment:
+      - HEADLESS=true
+      - PORT=8000
+    restart: unless-stopped

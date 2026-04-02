@@ -1,0 +1,29 @@
+# Environment
+.env
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Sessions (contain auth cookies — never commit)
+data/sessions/*.json
+
+# Logs
+logs/*.log
+
+# Test artifacts
+.pytest_cache/
+*.egg-info/
+dist/
+build/
+.coverage
+
+# IDE
+.vscode/
+.idea/
+.DS_Store
